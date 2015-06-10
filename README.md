@@ -109,11 +109,16 @@ No known backward incompatibility issues.
 
 ## Changelog ##
 
+### 1.1.1.2 ###
+
+* FIXED:
+	* js script for WPSEO 2.2
+
 ### 1.1.1.1 ###
 
 * FIXED:
 	* Wrong behavior when the main language is not English. Thanks to [Klaus Feurich](https://wordpress.org/support/profile/lunymarmusic) for reporting the bug.
-	* Restored default path to ReduxCode because of silly side effects.
+	* Restored default path to ReduxCore because of silly side effects.
 
 ### 1.1.1 ###
 
