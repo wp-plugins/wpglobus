@@ -88,8 +88,14 @@ From the [WPGlobus FAQ Archives](http://www.wpglobus.com/faq/):
 
 == Screenshots ==
 
-1. Admin interface: languages setup.
-2. Front: language switcher in the twentyfourteen theme menu.
+1. Welcome screen.
+2. Settings panel.
+3. Languages setup.
+4. Attaching language switcher to a menu.
+5. Editing post in multiple languages.
+6. Multilingual WP SEO and Featured Images.
+7. Language Switcher widget and Multilingual Editor dialog.
+8. Multilingual WooCommerce store powered by [WooCommerce WPGlobus](http://www.wpglobus.com/shop/extensions/woocommerce-wpglobus/).
 
 == Upgrade Notice ==
 
@@ -101,8 +107,13 @@ No known backward incompatibility issues.
 
 * FIXED:
 	* Correct handling of WP SEO entries containing special HTML characters.
+	* Correct handling of title,description and keywords for All In One SEO Pack 2.2.7
 	* Incorrect behavior of the menus created from custom type posts.
 	* Multilingual strings in Customizer (site name and description).
+* ADDED:
+	* Support for the [Whistles plugin](https://wordpress.org/plugins/whistles/).
+	* Partial support of the All-in-one SEO Pack-PRO.
+	* Added full name language without flag for Language Selector Mode option.
 
 = 1.2.0 =
 
