@@ -17,10 +17,14 @@ var WPGlobusAioseop;
 	var api;
 	api = WPGlobusAioseop = {
 		init: function() {
+			if ( 0 == $('#aiosp_snippet_wrapper').size() ) {
+				/* maybe All in One SEO Pack Pro license key is not set yet or invalid */
+				return;	
+			}
 			// tabs on
-			$('#wpglobus-aioseop-tabs').tabs();
+			$('#wpglobus-aioseop-tabs').removeClass('hidden wpglobus-hidden').tabs();
 			$('#wpglobus-aioseop-tabs').insertBefore($('#aiosp_snippet_wrapper'));
-			$('#aiosp_snippet_wrapper, #aiosp_title_wrapper, #aiosp_description_wrapper').addClass('hidden');
+			$('#aiosp_snippet_wrapper, #aiosp_title_wrapper, #aiosp_description_wrapper, #aiosp_keywords_wrapper').addClass('hidden');
 			api.setCounters();
 			api.attachListeners();
 
@@ -75,16 +79,9 @@ var WPGlobusAioseop;
 				$('#'+'aioseop_snippet_title_'+$t.data('language')).text($t.val());
 			});
 			$('body').on('change', '.wpglobus-aioseop_title', function(event){
-				var save_to = 'input[name=aiosp_title]',
-					s = '';
-
-				$('.wpglobus-aioseop_title').each(function (i, e) {
-					var $e = $(e);
-					if ($e.val() !== '') {
-						s = s + WPGlobusCore.addLocaleMarks( $e.val(), $e.data('language') );
-					}
-				});
-				$(save_to).val(s);		
+				var $t = $(this),
+					save_to = 'input[name=aiosp_title]';
+				$(save_to).val( WPGlobusCore.getString( $(save_to).val(), $t.val(), $t.data('language')) );		
 			});		
 			
 			// description
@@ -94,32 +91,17 @@ var WPGlobusAioseop;
 			});
 			
 			$('body').on('change', '.wpglobus-aioseop_description', function(event){
-				var save_to = 'textarea[name=aiosp_description]',
-					s = '';
-
-				$('.wpglobus-aioseop_description').each(function (i, e) {
-					var $e = $(e);
-					if ($e.val() !== '') {
-						s = s + WPGlobusCore.addLocaleMarks( $e.val(), $e.data('language') );
-					}
-				});
-				$(save_to).val(s);		
+				var $t = $(this),
+					save_to = 'textarea[name=aiosp_description]';
+				$(save_to).val( WPGlobusCore.getString( $(save_to).val(), $t.val(), $t.data('language')) );		
 			});					
 			
 			// keywords
 			$('body').on('change', '.wpglobus-aioseop_keywords', function(event){
-				var save_to = 'input[name=aiosp_keywords]',
-					s = '';
-
-				$('.wpglobus-aioseop_keywords').each(function (i, e) {
-					var $e = $(e);
-					if ($e.val() !== '') {
-						s = s + WPGlobusCore.addLocaleMarks( $e.val(), $e.data('language') );
-					}
-				});
-				$(save_to).val(s);		
+				var $t = $(this), 
+					save_to = 'input[name=aiosp_keywords]';
+				$(save_to).val( WPGlobusCore.getString( $(save_to).val(), $t.val(), $t.data('language')) );		
 			});				
-			
 			
 		}	
 	};

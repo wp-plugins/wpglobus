@@ -173,7 +173,8 @@ var WPGlobusDialogApp;
 		addElement: function(elem) {
 			var option = {
 				id: null,
-				dialogTitle: ''
+				dialogTitle: '',
+				style: ''
 			}
 			if ( 'string' == typeof(elem) ) {
 				option.id = elem;	
@@ -185,7 +186,7 @@ var WPGlobusDialogApp;
 		
 			var $element = null, id = null, name = null, node = null,
 				sb = api.startButton,
-				clone, v;
+				clone, v, style;
 
 			node = document.getElementById(option.id);	
 			if ( null ===  node ) {
@@ -202,6 +203,7 @@ var WPGlobusDialogApp;
 			}	
 			clone = $( $element.clone() );
 			//$element.addClass('hidden');	
+			style = $element.attr('style') || '';
 			$element.attr('style','display:none;');
 			clone.attr('id', 'wpglobus-'+id).attr('name', 'wpglobus-'+name);
 			clone.data('source-id', id);
@@ -210,11 +212,18 @@ var WPGlobusDialogApp;
 				v = WPGlobusCore.getTranslations( $element.text() )[WPGlobusCoreData['language']];
 				clone.text( v );
 				clone.data( 'nodename', 'TEXTAREA' );
-				clone.attr( 'style', 'width:95%;float:left;');
+				if ( '' == option.style ) {
+					clone.attr( 'style', style + ';width:95%;float:left;' );
+				} else {
+					clone.attr( 'style', style + ';' + option.style );
+				}	
 			} else {
 				v = WPGlobusCore.getTranslations( $element.val() )[WPGlobusCoreData['language']];
 				clone.attr( 'value', v );
 				clone.data( 'nodename', 'INPUT' );
+				if ( '' != option.style ) {
+					clone.attr( 'style', style + ';' + option.style );
+				}	
 			}	
 			
 			sb = sb.replace(/{{id}}/g, id);
@@ -851,42 +860,19 @@ jQuery(document).ready(function () {
 				
                 $('.wpglobus-menu-item').on('change', function () {
                     var $this = $(this),
-                        li, id, so,
-                        s = '', $e, item_id = '',
-                        lang = [];
-
+						item_id = $this.data('item-id'),
+						s, so; 
                     if ($this.hasClass('wpglobus-item-title')) {
-                        li = $this.parents('li');
-                        id = li.attr('id');
-                        $.each($('#' + id + ' .wpglobus-item-title'), function (index, element) {
-                            $e = $(element);
-							var l = $e.data('language');
-                            if ($e.val() !== '') {
-                                s = s + WPGlobusAdmin.data.locale_tag_start.replace('%s', l) + $e.val() + WPGlobusAdmin.data.locale_tag_end;
-                            }
-							lang[index] = l;
-                            item_id = $e.data('item-id');
-                        });
-						so = $(document).triggerHandler('wpglobus_get_menu_translations', {string:s, lang:lang, id:item_id, type:'input.edit-menu-item-title'});
+						s = WPGlobusCore.getString( $('input#edit-menu-item-title-' + item_id).val(), $this.val(), $this.data('language') );
+						so = $(document).triggerHandler('wpglobus_get_menu_translations', {string:s, lang:WPGlobusCoreData.open_languages, id:item_id, type:'input.edit-menu-item-title'});
 						if ( typeof so !== 'undefined' ) {
 							s = so;		
 						}					
                         $('input#edit-menu-item-title-' + item_id).val(s);
                     }
-
                     if ($this.hasClass('wpglobus-item-attr')) {
-                        li = $this.parents('li');
-                        id = li.attr('id');
-                        $.each($('#' + id + ' .wpglobus-item-attr'), function (index, element) {
-                            $e = $(element);
-							var l = $e.data('language');
-                            if ($e.val() !== '') {
-                                s = s + WPGlobusAdmin.data.locale_tag_start.replace('%s', l) + $e.val() + WPGlobusAdmin.data.locale_tag_end;
-                            }
-							lang[index] = l;
-                            item_id = $e.data('item-id');
-                        });
-						so = $(document).triggerHandler('wpglobus_get_menu_translations', {string:s, lang:lang, id:item_id, type:'input.edit-menu-item-attr-title'});
+						s = WPGlobusCore.getString( $('input#edit-menu-item-attr-title-' + item_id).val(), $this.val(), $this.data('language') );						
+						so = $(document).triggerHandler('wpglobus_get_menu_translations', {string:s, lang:WPGlobusCoreData.open_languages, id:item_id, type:'input.edit-menu-item-attr-title'});
 						if ( typeof so !== 'undefined' ) {
 							s = so;		
 						}					

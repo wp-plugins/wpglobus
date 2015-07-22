@@ -224,14 +224,6 @@ if ( WPGlobus_WP::is_doing_ajax() || ! is_admin() ) {
 }
 
 /**
- * For customizer
- */
-if ( is_admin() && WPGlobus_WP::is_pagenow( 'customize.php' ) ) {
-	//add_filter( 'option_blogdescription', array( 'WPGlobus_Filters', 'filter__text' ), 0 );
-	//add_filter( 'option_blogname', array( 'WPGlobus_Filters', 'filter__text' ), 0 );
-}
-
-/**
  * @see get_locale()
  */
 add_filter( 'locale', array( 'WPGlobus_Filters', 'filter__get_locale' ), PHP_INT_MAX );
@@ -240,6 +232,14 @@ add_filter( 'locale', array( 'WPGlobus_Filters', 'filter__get_locale' ), PHP_INT
 add_action( 'activated_plugin', array( 'WPGlobus', 'activated' ) );
 
 add_action( 'admin_init', array( 'WPGlobus_Filters', 'action__admin_init' ), 0 );
+
+/**
+ * Translate metadata
+ * @since 1.2.1
+ */
+add_action( 'wp', array( 'WPGlobus_Filters', 'set_multilingual_meta_keys' ) );
+add_filter( 'get_post_metadata', array( 'WPGlobus_Filters', 'filter__postmeta' ), 0, 4 );
+
 
 /**
  * ACF filters
@@ -254,30 +254,49 @@ if ( WPGlobus_WP::is_doing_ajax() || ! is_admin() ) {
  * All In One SEO Pack filters
  */
 if ( defined( 'AIOSEOP_VERSION' ) ) {
-	if ( ! is_admin() ) {
-		require_once 'vendor/class-wpglobus-aioseop.php';
+	if ( is_admin() ) {
 		
+		/**
+		 * Filter for @see localization
+		 * @scope admin
+		 * @since 1.2.1
+		 */		
+		add_filter( 'localization', array( 'WPGlobus_Filters', 'filter__text' ), 0 );
+		
+	} else {
+		
+		require_once 'vendor/class-wpglobus-aioseop.php';
+
 		/**
 		 * Filter for @see localization
 		 * @scope front
 		 * @since 1.1.1
 		 */
 		add_filter( 'localization', array( 'WPGlobus_Filters', 'filter__text' ), 0 );
-		
+
 		/**
 		 * Filter for @see aioseop_description
 		 * @scope front
 		 * @since 1.0.8
-		 */		
+		 */
 		add_filter( 'aioseop_description', array( 'WPGlobus_All_in_One_SEO', 'filter__description' ), 0 );
-		
+
 		/**
 		 * Filter for @see aioseop_title
 		 * @scope front
-		 * @since 1.0.8		 
-		 */			
+		 * @since 1.0.8
+		 */
 		add_filter( 'aioseop_title', array( 'WPGlobus_All_in_One_SEO', 'filter__title' ), 0 );
+	
 	}
+}
+
+if ( class_exists( 'Whistles_Load' ) ) {
+	/**
+	 * Translate "Whistles"
+	 * https://wordpress.org/plugins/whistles/
+	 */
+	add_filter( 'whistle_content', array( 'WPGlobus_Filters', 'filter__text' ), 0 );
 }
 
 # --- EOF

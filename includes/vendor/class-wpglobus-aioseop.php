@@ -35,20 +35,23 @@ function aioseop_mrt_pccolumn($aioseopcn, $aioseoppi) {
 			</div>
 		</div>
 	<?php }
-}	 
- 
-require_once( WP_PLUGIN_DIR . '/all-in-one-seo-pack/aioseop_class.php' );
+}
+
+/** @noinspection PhpIncludeInspection */
+require_once( AIOSEOP_PLUGIN_DIR . 'aioseop_class.php' );
 
 /**
  * Class WPGlobus_All_in_One_SEO
  */
+
+/** @noinspection PhpMultipleClassesDeclarationsInOneFile */
 class WPGlobus_All_in_One_SEO extends All_in_One_SEO_Pack {
 		
 	private $wpg_language = '';
 	
 	function __construct() {
 	}
-	
+
 	/**
 	 * Filter for post title
 	 * 
@@ -64,30 +67,41 @@ class WPGlobus_All_in_One_SEO extends All_in_One_SEO_Pack {
 		}	
 		
 		global $post; 
+		
+		$title = $text;
 
-		$title_source = get_post_meta( $post->ID, "_aioseop_title", true );
-		$default_title = WPGlobus_Core::text_filter( $title_source, WPGlobus::Config()->default_language );		
-	
-		if ( false !== strpos($text, $default_title) ) {
-			/**
-			 * Because we have not translation of SEO title for current language need to autogenerate it 
-			 */					
-			if ( false === strpos( $text, '|' ) ) {
-	
-				$title = $post->post_title;
+		if ( is_singular() ) {
+		
+			$title_source = get_post_meta( $post->ID, "_aioseop_title", true );
+			if ( empty( $title_source ) ) { 
+				$default_title = null;
+			} else {
+				$default_title = WPGlobus_Core::text_filter( $title_source, WPGlobus::Config()->default_language );	
+			}	
+		
+			if ( $default_title != null && false !== strpos($text, $default_title) ) {
+
+				/**
+				 * Because we have not translation of SEO title for current language need to autogenerate it 
+				 */					
+				if ( false === strpos( $text, '|' ) ) {
+		
+					$title = $post->post_title;
+					
+				} else {
+					
+					$title_arr = explode('|', $text);
+					$title = $post->post_title;
+					$title .= ' |';
+					$title .= WPGlobus_Core::text_filter( $title_arr[1], WPGlobus::Config()->language, null);
+						
+				}
 				
 			} else {
-				
-				$title_arr = explode('|', $text);
-				$title = $post->post_title;
-				$title .= ' |';
-				$title .= WPGlobus_Core::text_filter( $title_arr[1], WPGlobus::Config()->language, null);
-					
-			}
-			
-		} else {
-			$title = $text;
-		}	
+				$title = $text;
+			}	
+		
+		}
 		
 		return $title;
 	
@@ -233,6 +247,8 @@ class WPGlobus_All_in_One_SEO extends All_in_One_SEO_Pack {
 /**
  * Class WPGlobus_aioseop
  */
+
+/** @noinspection PhpMultipleClassesDeclarationsInOneFile */
 class WPGlobus_aioseop {
 	
 	/**
@@ -260,7 +276,7 @@ class WPGlobus_aioseop {
 			//global $WPGlobus;
 			wp_register_script(
 				'wpglobus-aioseop',
-				WPGLobus::$PLUGIN_DIR_URL . "includes/js/wpglobus-vendor-aioseop" . WPGLobus::SCRIPT_SUFFIX() . ".js",
+				WPGlobus::$PLUGIN_DIR_URL . "includes/js/wpglobus-vendor-aioseop" . WPGlobus::SCRIPT_SUFFIX() . ".js",
 				array( 'jquery' ),
 				WPGLOBUS_VERSION,
 				true
@@ -439,20 +455,55 @@ class WPGlobus_aioseop {
 			default:
 				$title_format = '';
 		endswitch;
-	
-		/** @todo may be use get_post_title_format() ? */
-		$aiosp_meta_title 		= $aio->get_aioseop_title($post);
 		
-		$aiosp_post_description = $aio->get_post_description($post);
-		$aiosp_meta_description_source = get_post_meta( $post->ID, "_aioseop_description", true );
-		$aiosp_meta_description_source = trim( $aiosp_meta_description_source );
-
+		/** 
+		 * Get meta title in current language ( WPGlobus::Config()->language )
+		 * in $aioseop_options['aiosp_post_title_format'] format, usual as %post_title% | %blog_title%
+		 * Title will be like to "New Post for All in one Seo Pack | WPGlobus" without language marks
+		 */
+		$aiosp_meta_title = $aio->get_aioseop_title( $post );
+		
+		if ( isset( 
+				/** separator **/ 
+				$title_format[1] 
+			) ) {
+			$aiosp_meta_title = explode( $title_format[1], $aiosp_meta_title );
+			$aiosp_meta_title = $aiosp_meta_title[0] ;
+		}
+		
+		$aiosp_meta_title_source = get_post_meta( $post->ID, "_aioseop_title", true );
+		$aiosp_meta_title_source = trim( $aiosp_meta_title_source );
+		if ( ! WPGlobus_Core::text_filter( $aiosp_meta_title_source, WPGlobus::Config()->default_language ) ) {
+			/**
+			 * Reset meta title for default language
+			 */
+			$aiosp_meta_title = '';
+		}	
+		
+		/** 
+		 * Get meta description in current language ( WPGlobus::Config()->language ) with $aio->get_post_description($post)
+		 * @see 'localization' filter in wpglobus-controller.php
+		 */
+		// $aiosp_post_description 		= $aio->get_post_description($post);
+		 
+		/**
+		 * but we need description with language marks
+		 */		
+		$aiosp_meta_description_source  = $aiosp_post_description = get_post_meta( $post->ID, "_aioseop_description", true );
+		$aiosp_meta_description_source  = trim( $aiosp_meta_description_source );
+	
+		/** 
+		 * Get keywords /// title in current language ( WPGlobus::Config()->language )
+		 */
+		$aiosp_keywords_source = get_post_meta( $post->ID, "_aioseop_keywords", true );
+		
+	
 		$header_style = ' style="padding:8px 0;"';
 		$link_style = ' style="color:#12c;cursor: pointer;text-decoration: -moz-use-text-color none solid;font-size:16px;"';
 		$cite_style = ' style="color:#093;font-style:normal;"';
 		?>
 		
-		<div id="wpglobus-aioseop-tabs">
+		<div id="wpglobus-aioseop-tabs" class="hidden wpglobus-hidden">
 			<ul class="wpglobus-aioseop-tabs-list">    <?php
 				$order = 0;
 				foreach ( WPGlobus::Config()->enabled_languages as $language ) { ?>
@@ -469,14 +520,42 @@ class WPGlobus_aioseop {
 
 			foreach ( WPGlobus::Config()->enabled_languages as $language ) {
 				
-				$return = $language == WPGlobus::Config()->default_language ? WPGlobus::RETURN_IN_DEFAULT_LANGUAGE : WPGlobus::RETURN_EMPTY;
+				if ( $language == WPGlobus::Config()->default_language ) {
+					
+					$return = WPGlobus::RETURN_IN_DEFAULT_LANGUAGE;
+					if ( $language == WPGlobus::Config()->language ) {
+						$aiosp_title = trim( WPGlobus_Core::text_filter( $aiosp_meta_title, $language, WPGlobus::RETURN_IN_DEFAULT_LANGUAGE ) );
+					} else {
+						/**
+						 * Get title from source ( post meta key '_aioseop_title' )
+						 */
+						$aiosp_title = trim( WPGlobus_Core::text_filter( $aiosp_meta_title_source, $language, WPGlobus::RETURN_EMPTY ) );
+					}
+					
+				} else {
+					
+					$return = WPGlobus::RETURN_EMPTY;
+					$aiosp_title = trim( WPGlobus_Core::text_filter( $aiosp_meta_title, $language, WPGlobus::RETURN_EMPTY ) );
+					if ( empty( $aiosp_title ) ) {
+						/**
+						 * Get title from source ( post meta key '_aioseop_title' )
+						 */
+						$aiosp_title = trim( WPGlobus_Core::text_filter( $aiosp_meta_title_source, $language, WPGlobus::RETURN_EMPTY ) );
+					}
+					
+				}	
 				
-				$url        = WPGlobus_Utils::localize_url( $permalink['url'], $language );  
-				
-				$aiosp_title 			 = trim( WPGlobus_Core::text_filter($aiosp_meta_title, $language, $return) );
-				$aiosp_placeholder_title = WPGlobus_Core::text_filter($post->post_title, $language, $return);
+				$url = WPGlobus_Utils::localize_url( $permalink['url'], $language );  
+
+				/**
+				 * Set snippet title
+				 */
+				$aiosp_placeholder_title = WPGlobus_Core::text_filter( $post->post_title, $language, $return );
 				$aiosp_snippet_title 	 = empty( $aiosp_title ) ? $aiosp_placeholder_title : $aiosp_title;
 				
+				/**
+				 * Set meta description
+				 */
 				$aiosp_meta_description  = WPGlobus_Core::text_filter($aiosp_meta_description_source, $language, $return);
 
 				if ( empty($aiosp_meta_description) ) {
@@ -506,8 +585,10 @@ class WPGlobus_aioseop {
 					$aiosp_snippet_description 		= $aiosp_description;			
 				
 				}	
+				/**
+				 * Make All in one Seo Pack tabs
+				 */
 				?>
-
 				<div id="aioseop-tab-<?php echo $language; ?>" class="wpglobus-aioseop-general" data-language="<?php echo $language; ?>"
 				     data-url-<?php echo $language; ?>="<?php echo $url; ?>">			<?php 
 						$r = '';
@@ -552,7 +633,7 @@ class WPGlobus_aioseop {
 								$data['args']['value']   	= $aiosp_description;
 								
 							} else if ( 'aiosp_keywords' == $name ) {
-								continue;
+
 								$placeholders = array();
 								foreach( $keywords as $keyword ) {
 									/**
@@ -566,6 +647,7 @@ class WPGlobus_aioseop {
 								$data['args']['data']  = ' data-language="' . $language . '" ';
 								$data['args']['name']  = $data['args']['name'] . '_' . $language;
 								$data['args']['data']  = ' data-language="' . $language . '" ';
+								$data['args']['value'] = WPGlobus_Core::text_filter( $aiosp_keywords_source, $language, WPGlobus::RETURN_EMPTY );
 
 							}
 							
@@ -576,7 +658,7 @@ class WPGlobus_aioseop {
 					?> 
 				</div> <!-- .wpglobus-aioseop-general -->	<?php
 				
-			} ?>
+			} 	// end foreach ?>
 			<!-- <hr /> -->
 		</div> <!-- #wpglobus-aioseop-tabs -->
 

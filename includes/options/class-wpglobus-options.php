@@ -116,7 +116,7 @@ class WPGlobus_Options {
 				            __( 'Read About WPGlobus', 'wpglobus' ) .
 				            '</a>' .
 				            '<br/>' .
-				            '&bull; ' . __( 'Click the <strong>[Languages]</strong> tab at the left to setup the various options.', 'wpglobus' ) .
+				            '&bull; ' . __( 'Click the <strong>[Languages]</strong> tab at the left to setup the options.', 'wpglobus' ) .
 				            '<br/>' .
 				            '&bull; ' . __( 'Use the <strong>[Languages Table]</strong> section to add a new language or to edit the language attributes: name, code, flag icon, etc.', 'wpglobus' ) .
 				            '<br/>' .
@@ -201,7 +201,7 @@ class WPGlobus_Options {
 			$navigation_menu_placeholder = __( 'Select navigation menu', 'wpglobus' );
 		}
 
-		$desc_enabled_languages = join( '', array(
+		$desc_enabled_languages = implode( '', array(
 			'<strong>' . __( 'Instructions:', 'wpglobus' ) . '</strong>',
 			'<ul style="list-style: disc; list-style-position: inside;">',
 			'<li>' . sprintf( __( 'Place the <strong>main language</strong> of your site at the top of the list by dragging the %s icons.', 'wpglobus' ), '<i class="el el-move icon-large"></i>' ) . '</li>',
@@ -256,10 +256,12 @@ class WPGlobus_Options {
 						'allowClear'              => false,
 						'minimumResultsForSearch' => - 1
 					),
-					'options'  => array(
-						'code'  => __( 'Two-letter Code (en, ru, it, etc.)', 'wpglobus' ),
-						'name'  => __( 'Full Name (English, Russian, Italian, etc.)', 'wpglobus' ),
-						'empty' => __( 'Flags only', 'wpglobus' )
+					'options' => array(
+						'code'      => __( 'Two-letter Code with flag (en, ru, it, etc.)', 'wpglobus' ),
+						'full_name' => __( 'Full Name (English, Russian, Italian, etc.)', 'wpglobus' ),
+						/* @since 1.2.1 */
+						'name'      => __( 'Full Name with flag (English, Russian, Italian, etc.)', 'wpglobus' ),
+						'empty'     => __( 'Flags only', 'wpglobus' )
 					),
 					'default'  => 'code'
 				),
