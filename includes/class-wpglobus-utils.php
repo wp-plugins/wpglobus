@@ -11,13 +11,12 @@ class WPGlobus_Utils {
 	 * @param string          $url      URL to localize
 	 * @param string          $language Language code
 	 * @param WPGlobus_Config $config   Alternative configuration (i.e. Unit Test mock object)
-	 *
 	 * @return string
 	 */
 	public static function localize_url( $url = '', $language = '', WPGlobus_Config $config = null ) {
 
 		/**
-		 * Use the global configuration is alternative not passed
+		 * Use the global configuration if alternative not passed
 		 */
 		if ( is_null( $config ) ) {
 			// @codeCoverageIgnoreStart
@@ -31,6 +30,7 @@ class WPGlobus_Utils {
 		 * Site Address (URL) is home_url
 		 * We need home_url, and we cannot use the @home_url function,
 		 * because it will filter back here causing endless loop.
+		 *
 		 * @todo Multisite?
 		 */
 		$home_url = get_option( 'home' );
@@ -61,6 +61,7 @@ class WPGlobus_Utils {
 
 		/**
 		 * Regex to replace current language prefix with the requested one.
+		 *
 		 * @example ^(https?:\/\/(?:.+\.)?example\.com)(?:\/?(?:en|ru|pt))?($|\/$|[\/#\?].*$)
 		 */
 
@@ -105,7 +106,6 @@ class WPGlobus_Utils {
 	 *
 	 * @param string          $url
 	 * @param WPGlobus_Config $config Alternative configuration (i.e. Unit Test mock object)
-	 *
 	 * @return string
 	 */
 	public static function extract_language_from_url( $url = '', WPGlobus_Config $config = null ) {
@@ -131,6 +131,7 @@ class WPGlobus_Utils {
 
 		/**
 		 * Regex to find the language prefix.
+		 *
 		 * @example !^/(en|ru|pt)/!
 		 */
 		$re = '!^' . $path_home .
@@ -150,7 +151,6 @@ class WPGlobus_Utils {
 	 * Note: does not check if the function is in a class method.
 	 *
 	 * @param string $function_name
-	 *
 	 * @return bool
 	 */
 	public static function is_function_in_backtrace( $function_name ) {
@@ -171,7 +171,6 @@ class WPGlobus_Utils {
 	 * http://www.example.com becomes example.com
 	 *
 	 * @param string $url
-	 *
 	 * @return string
 	 * @since 1.0.12
 	 */
@@ -196,6 +195,7 @@ class WPGlobus_Utils {
 		} else {
 			/**
 			 * Strip all prefixes
+			 *
 			 * @todo example.co.uk becomes just co.uk
 			 *       This does not break the algorithm of @see localize_url, but still needs to be fixed.
 			 */
@@ -215,7 +215,6 @@ class WPGlobus_Utils {
 	 * Convert array of local texts to multilingual string (with WPGlobus delimiters)
 	 *
 	 * @param string[] $translations
-	 *
 	 * @return string
 	 */
 	public static function build_multilingual_string( $translations ) {
@@ -229,17 +228,17 @@ class WPGlobus_Utils {
 
 	/**
 	 * Returns the current URL.
-	 * @since 1.1.1
 	 * There is no method of getting the current URL in WordPress.
 	 * Various snippets published on the Web use a combination of home_url and add_query_arg.
 	 * However, none of them work when WordPress is installed in a subfolder.
 	 * The method below looks valid. There is a theoretical chance of HTTP_HOST tampered, etc.
-	 * However, the same line of code is used by the WordPress core, for example in
-	 * @see   wp_admin_canonical_url
-	 * so we are going to use it, too
+	 * However, the same line of code is used by the WordPress core,
+	 * for example in @see wp_admin_canonical_url, so we are going to use it, too
 	 * *
 	 * Note that #hash is always lost because it's a client-side parameter.
 	 * We might add it using a JavaScript call.
+	 *
+	 * @since 1.1.1
 	 */
 	public static function current_url() {
 		return set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
@@ -247,10 +246,9 @@ class WPGlobus_Utils {
 
 	/**
 	 * Build hreflang metas
+	 *
 	 * @since 1.1.1
-	 *
 	 * @param WPGlobus_Config $config Alternative configuration (i.e. Unit Test mock object)
-	 *
 	 * @return string[] Array of rel-alternate link tags
 	 */
 	public static function hreflangs( WPGlobus_Config $config = null ) {
@@ -258,7 +256,7 @@ class WPGlobus_Utils {
 		/**
 		 * Use the global configuration is alternative not passed
 		 */
-		if ( is_null( $config ) ) {
+		if ( null === $config ) {
 			// @codeCoverageIgnoreStart
 			$config = WPGlobus::Config();
 		}
@@ -266,16 +264,16 @@ class WPGlobus_Utils {
 
 		$hreflangs = array();
 
-		$ref_source = self::localize_url( self::current_url(), '%%lang%%', $config );
+		if ( is_404() ) {
+			return $hreflangs;
+		}
 
 		foreach ( $config->enabled_languages as $language ) {
-			$hreflang = str_replace( '_', '-', $config->locale[ $language ] );
-			if ( $config->hide_default_language && $language == $config->default_language ) {
-				$ref = str_replace( '%%lang%%/', '', $ref_source );
-			} else {
-				$ref = str_replace( '%%lang%%', $language, $ref_source );
-			}
-			$hreflangs[ $language ] = '<link rel="alternate" hreflang="' . $hreflang . '" href="' . $ref . '"/>';
+
+			$hreflangs[ $language ] = sprintf( '<link rel="alternate" hreflang="%s" href="%s"/>',
+				str_replace( '_', '-', $config->locale[ $language ] ),
+				WPGlobus_Utils::localize_current_url( $language, $config )
+			);
 
 		}
 
@@ -283,17 +281,40 @@ class WPGlobus_Utils {
 	}
 
 	/**
-	 * @todo The methods below are not used by the WPGlobus plugin. Need to check if they are used by any add-on.
-	 *       Marking them as deprecated so they will pop-up on code inspection.
+	 * @since 1.2.3
+	 * @param string    $language
+	 * @param WPGlobus_Config $config Alternative configuration (i.e. Unit Test mock object)
+	 * @return string
+	 */
+	public static function localize_current_url( $language = '',  WPGlobus_Config $config = null ) {
+		$url = apply_filters( 'wpglobus_pre_localize_current_url', '', $language );
+
+		if ( ! $url ) {
+			/**
+			 * Use the global configuration is alternative not passed
+			 */
+			if ( null === $config ) {
+				// @codeCoverageIgnoreStart
+				$config = WPGlobus::Config();
+			}
+			// @codeCoverageIgnoreEnd
+			$url = WPGlobus_Utils::localize_url( WPGlobus_Utils::current_url(), $language, $config );
+		}
+
+		return $url;
+	}
+
+	/**
+	 * @todo The methods below are not used by the WPGlobus plugin.
+	 * Need to check if they are used by any add-on.
+	 * Marking them as deprecated so they will pop-up on code inspection.
 	 */
 
 	/**
 	 * @deprecated
 	 * @codeCoverageIgnore
 	 * Return true if language is in array of enabled languages, otherwise false
-	 *
 	 * @param string $language
-	 *
 	 * @return bool
 	 */
 	public static function is_enabled( $language ) {
@@ -304,33 +325,26 @@ class WPGlobus_Utils {
 	 * @deprecated
 	 * @codeCoverageIgnore
 	 * Return true if language is in array of opened languages, otherwise false
-	 *
 	 * @param string $language
-	 *
 	 * @return bool
 	 */
 	public static function is_open( $language ) {
-		return in_array( $language, WPGlobus::Config()->open_languages );
+		return in_array( $language, WPGlobus::Config()->open_languages, true );
 	}
 
 	/**
 	 * @deprecated
 	 * @codeCoverageIgnore
-	 *
 	 * @param string $s
 	 * @param string $n
-	 *
 	 * @return bool
 	 */
 	public static function starts_with( $s, $n ) {
 		if ( strlen( $n ) > strlen( $s ) ) {
 			return false;
 		}
-		if ( $n == substr( $s, 0, strlen( $n ) ) ) {
-			return true;
-		}
 
-		return false;
+		return ( $n === substr( $s, 0, strlen( $n ) ) );
 	}
 
 

@@ -19,7 +19,28 @@ jQuery(document).ready(function($){
 		style = 'width:97%';	
 	}	
 	$('.acf_postbox .field').each(function(){
-		var $t = $(this);
+		var $t = $(this), id, h;
+		if ( $t.hasClass('field_type-textarea') ) {
+			id = $t.find('textarea').attr('id');
+			h = $('#'+id).height() + 20;
+			WPGlobusDialogApp.addElement({
+				id: id,
+				dialogTitle: 'Edit ACF field',
+				style: 'width:97%;float:left;',
+				styleTextareaWrapper: 'height:' + h + 'px;'
+			});
+		} else if ( $t.hasClass('field_type-text') ) {
+			id = $t.find('input').attr('id');
+			WPGlobusDialogApp.addElement({
+				id: id,
+				dialogTitle: 'Edit ACF field',
+				style: 'width:97%;float:left;'
+			});			
+		}
+
+		/**
+		 * @todo remove after testing
+		
 		if ( $t.hasClass('field_type-textarea') ) {
 			element = $t.find('textarea');
 			id = element.attr('id');
@@ -48,6 +69,7 @@ jQuery(document).ready(function($){
 			$(clone).val( WPGlobusCore.TextFilter($(element).val(), WPGlobusCoreData.language) );
 			$(clone).insertAfter(element);
 			$('<div style="width:20px;float:right;"><div style="margin:2px;" data-type="control" data-source-type="textarea" data-source-id="'+id+'" class="wpglobus_dialog_start wpglobus_dialog_icon"></div></div>').insertAfter(clone);
-		}
+		} // */
+		
 	});
 });

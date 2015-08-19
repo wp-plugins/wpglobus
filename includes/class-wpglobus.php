@@ -828,9 +828,9 @@ class WPGlobus {
 			if ( ! wp_script_is( 'select2-js' ) ) {
 				wp_enqueue_script(
 					'select2-js',
-					'//cdn.jsdelivr.net/select2/3.5.2/select2.min.js',
+					WPGlobus::$PLUGIN_DIR_URL . 'vendor/select2.min.js',
 					array( 'jquery' ),
-					null,
+					'3.5.2',
 					true
 				);
 			}
@@ -1309,12 +1309,17 @@ class WPGlobus {
 
 
 		if ( self::LANGUAGE_EDIT_PAGE === $page ) {
-			wp_enqueue_style(
-				'select2-css',
-				'//cdn.jsdelivr.net/select2/3.5.2/select2.css',
-				array(),
-				null
-			);
+			/**
+			 * Using the same 'select2-css' ID as Redux Plugin does, to avoid duplicate enqueueing
+			 */
+			if ( ! wp_style_is( 'select2-js' ) ) {
+				wp_enqueue_style(
+					'select2-css',
+					WPGlobus::$PLUGIN_DIR_URL . 'vendor/select2.min.css',
+					array(),
+					'3.5.2'
+				);
+			}
 		}
 
 		$post = get_post();
@@ -1596,14 +1601,15 @@ class WPGlobus {
 			'wpglobus_extra_languages', $extra_languages, $current_language );
 
 		/**
-		 * Filter to show off dropdown menu or not.
+		 * Filter to show dropdown menu or not.
 		 * Returning boolean.
 		 * @since 1.2.2
 		 *
-		 * @param boolean
-		 * @param null ( no navigation menu	)
+		 * @param bool
+		 * @param WPGlobus_Config
 		 */		
-		$dropdown_menu = apply_filters( 'wpglobus_dropdown_menu', true, null );
+		$dropdown_menu = apply_filters( 'wpglobus_dropdown_menu', true, WPGlobus::Config() );
+		
 
 		/**
 		 * Build the top-level menu link
@@ -1628,7 +1634,8 @@ class WPGlobus {
 				/**
 				 * Build the drop-down menu links for extra language
 				 */
-				$url                 = WPGlobus_Utils::localize_url( $current_url, $language );
+//				$url                 = WPGlobus_Utils::localize_url( $current_url, $language );
+				$url                 = WPGlobus_Utils::localize_current_url( $language );
 				$flag_name           = $this->_get_flag_name( $language );
 				$span_classes_lang   = $this->_get_language_classes( $language );
 				
@@ -1654,7 +1661,8 @@ class WPGlobus {
 				/**
 				 * Build the top-level menu link for extra language
 				 */
-				$url                 = WPGlobus_Utils::localize_url( $current_url, $language );
+//				$url                 = WPGlobus_Utils::localize_url( $current_url, $language );
+				$url                 = WPGlobus_Utils::localize_current_url( $language );
 				$flag_name           = $this->_get_flag_name( $language );
 				$span_classes_lang   = $this->_get_language_classes( $language );
 				
@@ -1758,10 +1766,10 @@ class WPGlobus {
 			 *
 			 * @since 1.2.2
 			 * @param bool   true If false then no dropdown
-			 * @param string WPGlobus::Config()->nav_menu Menu slug
+			 * @param WPGlobus_Config
 			 * @return bool Value of the first parameter, possibly updated by the filter
 			 */
-		apply_filters( 'wpglobus_dropdown_menu', true, WPGlobus::Config()->nav_menu )
+			apply_filters( 'wpglobus_dropdown_menu', true, WPGlobus::Config() )
 		) {
 			$parent_item_ID = 9999999999; # 9 999 999 999
 		} else {
@@ -1795,7 +1803,8 @@ class WPGlobus {
 			$item->title            =
 				'<span class="' . implode( ' ', $span_classes_lang ) . '">' . $this->_get_flag_name( $language ) . '</span>';
 			// This points to the URL localized for the selected language
-			$item->url         = WPGlobus_Utils::localize_url( $current_url, $language );
+//			$item->url         = WPGlobus_Utils::localize_url( $current_url, $language );
+			$item->url                 = WPGlobus_Utils::localize_current_url( $language );
 			$item->classes     = $parent_item_ID == 0 ? $menu_item_classes : $submenu_item_classes;
 			$item->description = '';
 			$item->language	   = $language;
@@ -2400,7 +2409,7 @@ class WPGlobus {
 		?>
 		<script type='text/javascript'>
 			/* <![CDATA[ */
-			jQuery('#wp-admin-bar-site-name a').text("<?php echo $bn; ?>");
+			jQuery('#wp-admin-bar-site-name a').eq(0).text("<?php echo $bn; ?>");
 			/* ]]> */
 		</script>
 		<?php
