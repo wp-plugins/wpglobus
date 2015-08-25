@@ -159,6 +159,7 @@ var WPGlobusDialogApp;
 			'style="{{style}}"',
 			'data-type="control" data-dialog-title="{{title}}" ',
 			'data-source-type="" data-source-id="{{id}}" ',
+			'{{sbTitle}} ',
 			'class="{{classes}}"></span>'
         ].join(''),
 		startButtonClass : 'wpglobus_dialog_start wpglobus_dialog_icon',
@@ -176,6 +177,7 @@ var WPGlobusDialogApp;
 				dialogTitle: '',
 				style: '',
 				styleTextareaWrapper: '',
+				sbTitle: ''
 			}
 			if ( 'string' == typeof(elem) ) {
 				option.id = elem;	
@@ -232,7 +234,8 @@ var WPGlobusDialogApp;
 			api.startButtonClass = 'TEXTAREA' == node.nodeName ? api.startButtonClass + ' wpglobus-textarea wpglobus-textarea-'+id : api.startButtonClass;
 			sb = sb.replace('{{classes}}', api.startButtonClass);
 			sb = option.dialogTitle == '' ? sb.replace('{{title}}', api.dialogTitle) : sb.replace('{{title}}', option.dialogTitle);
-
+			sb = option.sbTitle == '' ? sb.replace('{{sbTitle}}', option.sbTitle) : sb.replace('{{sbTitle}}', 'title="'+option.sbTitle+'"');
+			
 			$(sb).insertAfter('#'+id);
 			$(clone).insertAfter('#'+id);
 			if ( 'TEXTAREA' == node.nodeName ) {
@@ -903,7 +906,8 @@ jQuery(document).ready(function () {
 				});				
 			
 				var wrap_at = '#postdivrich',
-					set_title = true;	
+					set_title = true,
+					content_tabs_id = '#post-body-content';	
 				if ( WPGlobusAdmin.data.support['editor'] === false ) {
 					wrap_at = '#titlediv';	
 					set_title = false;	
@@ -912,7 +916,7 @@ jQuery(document).ready(function () {
 					set_title = false;	
 				}	
                 // Make post-body-content as tabs container
-                $('#post-body-content').prepend($('.wpglobus-post-body-tabs-list'));
+                $(content_tabs_id).prepend($('.wpglobus-post-body-tabs-list'));
                 $.each(WPGlobusAdmin.tabs, function (index, suffix) {
                     if ('default' === suffix) {
                         $(wrap_at).wrap('<div id="tab-default"></div>');
@@ -928,7 +932,7 @@ jQuery(document).ready(function () {
                 });
 
                 // tabs on
-                $('#post-body-content').addClass('wpglobus-post-body-tabs').tabs({
+                $(content_tabs_id).addClass('wpglobus-post-body-tabs').tabs({
 					beforeActivate: function( event, ui ){
 						var otab = ui.oldTab[0].id.replace('link-tab-','');
 						var ntab = ui.newTab[0].id.replace('link-tab-','');
@@ -952,7 +956,7 @@ jQuery(document).ready(function () {
                 //$('#content').text(WPGlobusAdmin.content.replace(/\n/g, "<p>"));
 
                 $('#content').text(WPGlobusAdmin.content);
-                $('#excerpt').addClass('hidden');
+                $('#excerpt').addClass('hidden').css({'display':'none'});
 				
                 if (typeof WPGlobusVendor !== "undefined") {
                     wpglobus_wpseo();
@@ -1099,7 +1103,7 @@ jQuery(document).ready(function () {
 				
 				$('body').on('click', '#publish, #save-post', function() {
 					if ( WPGlobusAdmin.data.open_languages.length > 1 ) {
-						$(document).triggerHandler('wpglobus_before_save_post');
+						$(document).triggerHandler('wpglobus_before_save_post', {content_tabs_id:content_tabs_id});
 						// if empty title in default language make it from another titles
 						var t = $('#title').val(),
 							index, title = '', delimiter = '';
