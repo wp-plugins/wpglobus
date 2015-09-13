@@ -17,18 +17,6 @@ class WPGlobus {
 	const URL_WPGLOBUS_SITE = 'http://www.wpglobus.com/';
 
 	/**
-	 * A never-called method for "make-pot" to extract strings to the .pot file.
-	 * Used to translate strings from the plugin header.
-	 *
-	 * @since 1.2.2
-	 */
-	protected static function _strings_for_pomo() {
-
-		/* translators: plugin description in the list of plugins in WP admin */
-		__( 'A WordPress Globalization / Multilingual Plugin. Posts, pages, menus, widgets and even custom fields - in multiple languages!' );
-	}
-
-	/**
 	 * @var string
 	 */
 	public static $minimalReduxFramework_version = '3.2.9.4';
@@ -143,13 +131,13 @@ class WPGlobus {
 		 * Init array of supported plugins
 		 */
 		$this->vendors_scripts['ACF']         = false;
+		$this->vendors_scripts['ACFPRO']      = false;
 		/** Set to true in @see WPGlobus_WPSEO::controller */
 		$this->vendors_scripts['WPSEO']       = false;
 		$this->vendors_scripts['WOOCOMMERCE'] = false;
 		$this->vendors_scripts['AIOSEOP']     = false; // All In One SEO Pack
 
 		if ( function_exists( 'acf' ) ) {
-			$this->vendors_scripts['ACF'] = true;
 
 			/**
 			 * @todo  Work on the ACF compatibility is in progress
@@ -157,7 +145,22 @@ class WPGlobus {
 			 * @see   'wpglobus_disabled_entities' filter for add/remove custom post types to array disabled_entities
 			 * @since 1.0.4
 			 */
-			$this->disabled_entities[] = 'acf';
+			global $acf;
+			if ( ! empty($acf->settings['pro']) && $acf->settings['pro'] ) {
+				/**
+				 * @since 1.2.6
+				 */
+				$this->vendors_scripts['ACFPRO'] = true;
+				$this->disabled_entities[] = 'acf-field-group';
+				$this->disabled_entities[] = 'acf-field';
+				
+			} else {
+
+				$this->vendors_scripts['ACF'] = true;
+				$this->disabled_entities[] = 'acf';
+
+			}	
+			
 		}
 
 		if ( defined( 'WC_VERSION' ) || defined( 'WOOCOMMERCE_VERSION' ) ) {
@@ -337,7 +340,7 @@ class WPGlobus {
 
 			}    // endif $devmode
 
-			if ( $this->vendors_scripts['ACF'] && WPGlobus_WP::is_pagenow( array(
+			if ( ( $this->vendors_scripts['ACF'] || $this->vendors_scripts['ACFPRO'] ) && WPGlobus_WP::is_pagenow( array(
 					'post.php',
 					'post-new.php'
 				) )
@@ -775,6 +778,11 @@ class WPGlobus {
 		$page_action = '';
 
 		/**
+		 * Init $page
+		 */
+		$page = '';
+		
+		/**
 		 * Init array data depending on the context for localize script
 		 */
 		$data = array(
@@ -787,8 +795,10 @@ class WPGlobus {
 			'locale_tag_end'    => self::LOCALE_TAG_END
 		);
 
-		$page = WPGlobus_WP::plugin_page();
-
+		if ( ! in_array( $pagenow, $enabled_pages ) ) {		
+			$page = WPGlobus_WP::plugin_page();
+		}
+		
 		if ( '' == $page ) {
 			/**
 			 * Now get $pagenow
@@ -1142,7 +1152,11 @@ class WPGlobus {
 				
 				$page_action = 'wpglobus_options';
 		
-			}
+			} else {
+
+				$page_action = $page;
+
+			}	
 
 			wp_register_script(
 				'wpglobus-admin',
@@ -1210,7 +1224,11 @@ class WPGlobus {
 			/**
 			 * Enqueue js for ACF support
 			 */
-			if ( $this->vendors_scripts['ACF'] && in_array( $page, array( 'post.php', 'post-new.php' ) ) ) {
+			if ( 
+				( $this->vendors_scripts['ACF'] || $this->vendors_scripts['ACFPRO'] )
+				&& in_array( $page, array( 'post.php', 'post-new.php' ) 
+				) 
+			) {
 				wp_register_script(
 					'wpglobus-acf',
 					self::$PLUGIN_DIR_URL . "includes/js/wpglobus-vendor-acf" . self::$_SCRIPT_SUFFIX . ".js",
@@ -1219,6 +1237,15 @@ class WPGlobus {
 					true
 				);
 				wp_enqueue_script( 'wpglobus-acf' );
+				wp_localize_script(
+					'wpglobus-acf',
+					'WPGlobusAcf',
+					array(
+						'wpglobus_version'  => WPGLOBUS_VERSION,
+						'pro' => $this->vendors_scripts['ACFPRO'] ? true : false
+					)
+				);	
+
 			}
 
 			if ( 'widgets.php' == $page ) {

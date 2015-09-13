@@ -138,6 +138,7 @@ class WPGlobus_Options {
 					            ) .
 					            '</br>' .
 					            '</br>' .
+					            // translators: ReduxFramework - %1$s version, %2$s folder where installed
 					            sprintf( esc_html__( 'The currently active ReduxFramework (version %1$s) was loaded from the %2$s folder.', 'wpglobus' ),
 						            ReduxFramework::$_version,
 						            '<code>' . ReduxFramework::$_dir . '</code>'
@@ -145,6 +146,7 @@ class WPGlobus_Options {
 					            '</br>' .
 					            '</br>' .
 					            '<strong>' .
+					            // translators: %1$s placeholder for the link to ReduxFramework plugin
 					            sprintf( esc_html__( 'We recommend you to install the most recent version of the ReduxFramework plugin: %1$s.', 'wpglobus' ), '<a href="https://wordpress.org/plugins/redux-framework/">https://wordpress.org/plugins/redux-framework/</a>' ) .
 				                '</strong>'
 					,
@@ -256,6 +258,7 @@ class WPGlobus_Options {
 
 		$desc_languages_intro = implode( '', array(
 			'<ul style="list-style: disc; list-style-position: inside;">',
+			// translators: %s placeholder for the icon (actual picture)
 			'<li>' . sprintf( __( 'Place the <strong>main language</strong> of your site at the top of the list by dragging the %s icons.', 'wpglobus' ), '<i class="el el-move icon-large"></i>' ) . '</li>',
 			'<li>' . __( '<strong>Uncheck</strong> the languages you do not plan to use.', 'wpglobus' ) . '</li>',
 			'<li>' . __( '<strong>Add</strong> more languages using the section below.', 'wpglobus' ) . '</li>',
@@ -266,7 +269,8 @@ class WPGlobus_Options {
 		$desc_more_languages =
 			__( 'Choose a language you would like to enable. <br>Press the [Save Changes] button to confirm.',
 				'wpglobus' ) . '<br /><br />';
-		$desc_more_languages .= sprintf( __( 'or Add new Language %1s here %2s', 'wpglobus' ),
+		// translators: %1$s and %2$s - placeholders to insert HTML link around 'here'
+		$desc_more_languages .= sprintf( __( 'or Add new Language %1$s here %2$s', 'wpglobus' ),
 			'<a href="?page=wpglobus_language_edit&action=add">', '</a>' );
 
 		$this->sections[] = array(
@@ -572,33 +576,7 @@ class WPGlobus_Options {
 			)
 		);
 
-		//		$donate_1 = '<div style="float:left;width:50%;">
-		//						<p style="float:left;width:50%;position:relative;top:50%;transform:translateY(25%);">' .
-		//						   __( 'If you like WPGlobus, please consider a small donation to support the future development.', 'wpglobus' ) .
-		//						'</p>' .
-		//						'<div style="float:left;">
-		//							<form id="wpglobus-donate" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-		//								<input type="hidden" name="cmd" value="_s-xclick">
-		//								<input type="hidden" name="hosted_button_id" value="SLF8M4YNZHNQN">
-		//								<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG_global.gif" border="0" name="submit" alt="PayPal">
-		//								<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-		//							</form>
-		//						</div>
-		//					</div>
-		//					<div style="clear:both;"></div>';
-
-		$donate_2 = '<div style="float:left;width:50%;">
-						<p style="float:left;width:50%;position:relative;top:50%;transform:translateY(25%);">' .
-		            __( 'If you like WPGlobus, please consider a small donation to support the future development.', 'wpglobus' ) .
-		            '</p>' .
-		            '<div style="float:left;">
-							<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=SLF8M4YNZHNQN"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG_global.gif" /></a>
-						</div>
-					</div>
-					<div style="clear:both;"></div>';
-
-		$this->args['intro_text'] =
-			'<h1 style="width:30%;float:left;">WPGlobus ' . WPGLOBUS_VERSION . '</h1>' . $donate_2;
+		$this->args['intro_text'] = include 'wpglobus-options-header.php';
 
 		// Add content after the form.
 		//		$this->args['footer_text'] =

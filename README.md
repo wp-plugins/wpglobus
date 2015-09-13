@@ -1,7 +1,7 @@
 # WPGlobus - Multilingual Everything! #
 **Contributors:** tivnetinc, alexgff, tivnet  
 **Donate link:** https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SLF8M4YNZHNQN  
-**Tags:** bilingual, globalization, i18n, international, l10n, localization, multilanguage, multilingual, multilingual SEO, language switcher, translate, translation, TIVWP, WPGlobus  
+**Tags:** bilingual, globalization, i18n, international, l10n, localization, multilanguage, multilingual, language switcher, translate, translation, WPGlobus  
 **Requires at least:** 4.2  
 **Tested up to:** 4.3  
 **Stable tag:** trunk  
@@ -80,11 +80,13 @@ Thank you!
 
 ### Admin interface translations: ###
 
-* `de_DE` : automatic translation (Microsoft)
+* `de_DE` : Tobias Hopp, [http://www.tobiashopp.info/](http://www.tobiashopp.info/)
 * `es_ES` : Patricia Casado, [mascositas.com](http://mascositas.com/)
-* `ru_RU` : The WPGlobus Team
+* `tr_TR` : Borahan Conkeroglu, [@boracon68](https://twitter.com/boracon68)
+* `fr_FR`, 'sv_SE' and future language updates: [WP-Translations](http://wp-translations.org/)
+* `ru_RU` : The WPGlobus Team (мы говорим по-русски!)
 
-**Please help us translate WPGlobus into your language!**
+**Please help us translate WPGlobus into your language!** Join the WP-Translations Team on [Transifex](https://www.transifex.com/wp-translations/wpglobus-multilingual/).
 
 ### More info and ways to contact the WPGlobus Development Team ###
 
@@ -158,6 +160,18 @@ From the [WPGlobus FAQ Archives](http://www.wpglobus.com/faq/):
 No known backward incompatibility issues.
 
 ## Changelog ##
+
+### 1.2.6-RC ###
+
+* FIXED:
+	* `de_DE` admin interface properly translated.
+	* Broken links to WPGlobus.com from admin pages.
+* ADDED:
+	* `tr_TR` admin interface translation.
+	* `es` and `fr` enabled by default.
+* COMPATIBILITY:
+	* All In One SEO Pack 2.2.7.2
+	* ACF Pro 5.3.0
 
 ### 1.2.5 ###
 

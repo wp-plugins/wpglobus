@@ -1,6 +1,6 @@
 {
   "name": "wpglobus",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "title": "WPGlobus",
   "description": "WPGlobus is a plugin for making bilingual / multilingual WordPress blogs and sites.",
   "main": "Gruntfile.js",
@@ -20,8 +20,10 @@
     "grunt-contrib-less": "^1.0.0",
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-exec": "^0.4.6",
     "grunt-pot": "^0.2.1",
     "grunt-text-replace": "^0.4.0",
+    "grunt-wp-i18n": "^0.5.3",
     "grunt-wp-readme-to-markdown": "^0.9.0",
     "load-grunt-tasks": "^3.1.0"
   }

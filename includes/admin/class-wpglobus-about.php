@@ -13,18 +13,12 @@ class WPGlobus_About {
 	 */
 	public static function about_screen() {
 
-		if ( WPGlobus::Config()->language === 'en' ) {
-			$language = '';
-		} else {
-			$language = WPGlobus::Config()->language . '/';
-		}
-
 		/**
 		 * For Google Analytics
 		 */
 		$ga_campaign = '?utm_source=wpglobus-admin-about&utm_medium=link&utm_campaign=activate-plugin';
 
-		$url_wpglobus_site             = WPGlobus::URL_WPGLOBUS_SITE . $language;
+		$url_wpglobus_site             = WPGlobus_Utils::url_wpglobus_site();
 		$url_wpglobus_site_home        = $url_wpglobus_site . $ga_campaign;
 		$url_wpglobus_site_contact     = $url_wpglobus_site . 'pg/contact-us/' . $ga_campaign;
 		$url_wpglobus_site_quick_start = $url_wpglobus_site . 'quick-start/' . $ga_campaign;
@@ -114,7 +108,9 @@ class WPGlobus_About {
 						'wpglobus' ); ?>
 					<?php _e( 'They might display some texts with no translation, or with all languages mixed together.',
 						'wpglobus' ); ?>
-					<?php printf( __( 'Please contact the theme / plugin author. If they are unable to assist, consider %s hiring the WPGlobus Team %s to write a custom code for you.',
+					<?php
+					/* translators: %s are used to insert HTML link. Keep them in place. */
+					printf( __( 'Please contact the theme / plugin author. If they are unable to assist, consider %s hiring the WPGlobus Team %s to write a custom code for you.',
 						'wpglobus' ), '<a href="' . $url_wpglobus_site_pro_support . '">', '</a>' ); ?>
 				</li>
 
