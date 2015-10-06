@@ -142,6 +142,7 @@ var WPGlobusDialogApp;
 			settingsClass : '.wpglobus_dialog_settings',
 			dialogTabs: '#wpglobus-dialog-tabs',
 			dialogTitle: '',
+			customData: null,
 			callback: function(){}
 		},
 		form : undefined,
@@ -168,12 +169,16 @@ var WPGlobusDialogApp;
         ].join(''),
 		startButtonClass : 'wpglobus_dialog_start wpglobus_dialog_icon',
 		clicks: 0,
-		
-		init : function(args) {
+		init: function(args) {
 			api.option = $.extend(api.option, args);
 			$(api.option.dialogTabs).tabs();
 			api.dialogTitle = api.option.dialogTitle;
 			this.attachListener();
+			if ( api.option.customData != null && typeof api.option.customData.addElements != 'undefined' ) {
+				$.each(api.option.customData.addElements, function(i,e) {
+					api.addElement(e);
+				});
+			}	
 		},
 		convertToId: function(s){
 			s = s.replace(/\]/g,'');
@@ -229,6 +234,15 @@ var WPGlobusDialogApp;
 				name = $element.attr('name');
 			}	
 			api.clone_id = api.convertToId(id);
+			
+			if ( $('#wpglobus-'+api.clone_id).length > 0 ) {
+				// WPGlobus element exists already
+				return;	
+			}	
+			if ( $(nodeName+'[name="wpglobus-'+name+'"]').length > 0 ) {
+				// WPGlobus element exists already
+				return;	
+			}	
 			
 			clone = $( $element.clone() );
 			//$element.addClass('hidden');	
@@ -522,7 +536,7 @@ jQuery(document).ready(function () {
                     this.start();
                 } else {
 					// init WPGlobusDialogApp for using in a 3-party plugins
-					WPGlobusDialogApp.init();
+					WPGlobusDialogApp.init({customData:WPGlobusCoreData.page_custom_data});
 				}	
             },
             admin_init: function () {
@@ -995,7 +1009,11 @@ jQuery(document).ready(function () {
 						if ( 'default' == ntab ) {
 							ntab = WPGlobusCoreData.default_language;	
 						}	
-						$(document).triggerHandler('wpglobus_post_body_tabs', [ otab, ntab ]);
+						var a = $(document).triggerHandler('wpglobus_post_body_tabs', [ otab, ntab ]);
+						if ( a || typeof a === 'undefined' ) {
+							return true;
+						}	
+						return false;
 					}
 				}); // #post-body-content
 

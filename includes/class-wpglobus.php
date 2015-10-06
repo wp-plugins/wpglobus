@@ -838,7 +838,7 @@ class WPGlobus {
 			if ( ! wp_script_is( 'select2-js' ) ) {
 				wp_enqueue_script(
 					'select2-js',
-					WPGlobus::$PLUGIN_DIR_URL . 'vendor/select2.min.js',
+					WPGlobus::$PLUGIN_DIR_URL . 'lib/select2.min.js',
 					array( 'jquery' ),
 					'3.5.2',
 					true
@@ -1198,10 +1198,19 @@ class WPGlobus {
 
 			if ( empty($page_data_key) ) {
 				$page_data_key = 'page_custom_data'; 
-			}	
+			}
 			if ( empty($page_data_values) ) {
 				$page_data_values = null;
 			}	
+			
+			/**
+			 * Filter for custom data to send to JS.
+			 * Returning array or null.
+			 * @since 1.2.9
+			 *
+			 * @param array $page_data_values An array with custom data or null.
+			 */			
+			$page_data_values = apply_filters( 'wpglobus_localize_custom_data', $page_data_values );			
 			
 			wp_localize_script(
 				'wpglobus-admin',
@@ -1342,7 +1351,7 @@ class WPGlobus {
 			if ( ! wp_style_is( 'select2-js' ) ) {
 				wp_enqueue_style(
 					'select2-css',
-					WPGlobus::$PLUGIN_DIR_URL . 'vendor/select2.min.css',
+					WPGlobus::$PLUGIN_DIR_URL . 'lib/select2.min.css',
 					array(),
 					'3.5.2'
 				);
@@ -1653,7 +1662,7 @@ class WPGlobus {
 	
 		if ( $dropdown_menu ) {
 
-			$output .= '<li class="page_item page_item_wpglobus_menu_switch page_item_has_children page_item_wpglobus_menu_switch_'.$language.'">' .
+			$output .= '<li class="page_item page_item_wpglobus_menu_switch page_item_has_children wpglobus-current-language page_item_wpglobus_menu_switch_'.$language.'">' .
 					   $a_tag .
 					   '<ul class="children">';
 
@@ -1680,7 +1689,7 @@ class WPGlobus {
 
 		} else {
 			
-			$output .= '<li class="page_item page_item_wpglobus_menu_switch page_item_wpglobus_menu_switch_'.$language.'">' .
+			$output .= '<li class="page_item page_item_wpglobus_menu_switch wpglobus-current-language page_item_wpglobus_menu_switch_'.$language.'">' .
 					   $a_tag .
 					   '</li>';
 					   
@@ -1816,6 +1825,7 @@ class WPGlobus {
 		// The top menu level points to the current URL. Useless? Maybe good for refresh.
 		$item->url         = $current_url;
 		$item->classes     = $menu_item_classes;
+		$item->classes     = 'wpglobus-current-language';
 		$item->description = '';
 		$item->language    = WPGlobus::Config()->language;
 		
