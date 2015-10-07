@@ -19,7 +19,7 @@ Multilingual / Globalization: URL-based multilanguage; easy translation interfac
 The **WPGlobus Free Core plugin** provides you with the main multilingual tools.
 
 * **Manually translate** posts, pages, categories, tags menus and widgets; **NOTE: WPGlobus does NOT translate texts automatically!** To see how it works, please read the [Quick Start Guide](http://www.wpglobus.com/quick-start/);
-* **Add one or several languages** to your WP blog/site using custom combinations of country flags, locales and language names;
+* **Add one or several languages** to your WP blog / site using custom combinations of country flags, locales and language names;
 * **Enable multilingual SEO features** of Yoast SEO and All in One SEO plugins;
 * **Switch the languages at the front-end** using: a drop-down menu extension and/or a customizable widget with various display options;
 * **Switch the Administrator interface language** using a top bar selector;
