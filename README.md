@@ -147,6 +147,12 @@ No known backward incompatibility issues.
 
 ## Changelog ##
 
+### 1.3.1 ###
+
+* FIXED:
+	* Disabled Uninstall procedure. Will be refactored in the future.
+	* Disable notice on non-existent [key][key] in WPML config.
+
 ### 1.3.0 ###
 
 * ADDED:
