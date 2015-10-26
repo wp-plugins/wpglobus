@@ -164,18 +164,6 @@ No known backward incompatibility issues.
 	* Updater bug "cannot delete old plugin files".
 	* Broken Welsh flag cy.png (Thanks to Tudor Thomas).
 
-= 1.2.6 =
-
-* FIXED:
-	* `de_DE` admin interface properly translated.
-	* Broken links to WPGlobus.com from admin pages.
-* ADDED:
-	* `tr_TR` admin interface translation.
-	* `es` and `fr` enabled by default.
-* COMPATIBILITY:
-	* All In One SEO Pack 2.2.7.2
-	* ACF Pro 5.3.0
-
 = Earlier versions =
 
 * [See the complete changelog here](https://github.com/WPGlobus/WPGlobus/blob/master/changelog.md)
