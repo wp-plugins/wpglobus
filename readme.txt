@@ -192,4 +192,3 @@ No known backward incompatibility issues.
 	* Demonstration of two WPGlobus-powered sites, one of which is installed in a subfolder of another. Shows the correct behavior of WPGlobus with URLs like `example.com/folder/wordpress`.
 * [WooCommerce Multilingual](http://demo-store.wpglobus.com/):
 	* A **multilingual WooCommerce** site powered by the `woocommerce-wpglobus` plugin.
-
