@@ -714,7 +714,7 @@ class WPGlobus {
 		?>
 		<div class="misc-pub-section wpglobus-switch">
 			<span
-				id="wpglobus-raw">&nbsp;&nbsp;WPGlobus: <strong><?php echo strtoupper( $mode == 'on' ? 'off' : 'on' ); ?></strong></span>
+				id="wpglobus-raw" class="wpglobus-icon-globe">&nbsp;&nbsp;WPGlobus: <strong><?php echo strtoupper( $mode == 'on' ? 'off' : 'on' ); ?></strong></span>
 			<a href="post.php?post=<?php echo $post->ID; ?>&action=edit&wpglobus=<?php echo $mode; ?>">Toggle</a>
 		</div>
 	<?php
@@ -1828,7 +1828,7 @@ class WPGlobus {
 		// The top menu level points to the current URL. Useless? Maybe good for refresh.
 		$item->url         = $current_url;
 		$item->classes     = $menu_item_classes;
-		$item->classes     = 'wpglobus-current-language';
+		$item->classes[]   = 'wpglobus-current-language';
 		$item->description = '';
 		$item->language    = WPGlobus::Config()->language;
 		
